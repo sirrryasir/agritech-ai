@@ -57,7 +57,7 @@ export default function Home() {
       <div className="max-w-xl w-full bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-slate-700">
         <div className="p-8">
           <h1 className="text-3xl font-bold bg-linear-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-2">
-            AgriTech AI System
+            AgriTech AI
           </h1>
           <p className="text-slate-400 mb-8">
             Enter the soil and weather parameters to get the best crop recommendation for your farm.
