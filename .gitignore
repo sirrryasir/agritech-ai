@@ -3,7 +3,7 @@ venv/
 __pycache__/
 *.pyc
 .env
-backend/models/*.joblib
+# backend/models/*.joblib
 !backend/models/.gitkeep
 
 # Jupyter
