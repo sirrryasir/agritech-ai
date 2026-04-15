@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriTech AI -- Technical Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #020617; /* slate-950 */
+      --bg-card: #0f172a; /* slate-900 */
+      --bg-card-hover: #1e293b; /* slate-800 */
+      --text-primary: #f8fafc; /* slate-50 */
+      --text-secondary: #94a3b8; /* slate-400 */
+      --text-muted: #64748b; /* slate-500 */
+      --accent-green: #22c55e;
+      --border: #1e293b; /* slate-800 */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== SLIDE SYSTEM ===== */
+    .slides-container {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 64px 80px 100px; /* added bottom padding for nav */
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== NAVIGATION ===== */
+    .nav-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(2, 6, 23, 0.9);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-bar .slide-counter {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav-bar .slide-counter .current {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 10px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn:hover:not(:disabled) { 
+      background: var(--bg-card-hover); 
+      color: var(--text-primary);
+    }
+    
+    .nav-btn:disabled { 
+      opacity: 0.3; 
+      cursor: not-allowed; 
+      pointer-events: none;
+    }
+    
+    /* Vercel-like Primary Button */
+    .nav-btn.primary {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      border-color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    .nav-btn.primary:hover:not(:disabled) {
+      background: #e2e8f0;
+      border-color: #e2e8f0;
+      transform: translateY(-1px);
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--accent-green);
+      z-index: 200;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== SLIDE: TITLE ===== */
+    .slide-title {
+      text-align: center;
+    }
+
+    .slide-title h1 {
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .slide-title .subtitle {
+      font-size: 24px;
+      color: var(--text-secondary);
+      margin-bottom: 56px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .slide-title .author-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      padding: 24px 48px;
+      /* background: var(--bg-card); */
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .slide-title .author-info strong {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .slide-header {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slide-header h2 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    
+    .slide-header p {
+      color: var(--text-secondary);
+      font-size: 18px;
+    }
+
+    .slide-content {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      height: 100%;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #000;
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+    
+    .code-key { color: #818cf8; }
+    .code-str { color: #34d399; }
+    .code-num { color: #f472b6; }
+
+    /* Stats Row */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--text-secondary);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .stat-box.highlight {
+      border-top-color: var(--accent-green);
+    }
+
+    .stat-box .value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-box .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* Pipeline Steps */
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .pipeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .pipeline-step .step-num {
+      width: 36px; height: 36px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pipeline-step .step-info h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .pipeline-step .step-info p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 20px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .comparison-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #020617;
+    }
+
+    .comparison-table tr:last-child td { border-bottom: none; }
+
+    /* Image Display */
+    .img-display {
+      max-width: 100%;
+      max-height: 50vh;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+      background: #fff; /* For transparent plots */
+      padding: 16px;
+    }
+    
+    .img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .kbd-nav {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .kbd-key {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-secondary);
+      font-family: inherit;
+    }
+    
+    .ul-list {
+      list-style: none;
+    }
+    
+    .ul-list li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .ul-list li::before {
+      content: "➔";
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progress"></div>
+
+  <div class="slides-container" id="slides">
+    <!-- SLIDE 1: Title -->
+    <div class="slide slide-title active" data-slide="1">
+      <h1>AgriTech AI</h1>
+      <p class="subtitle">Data-Driven Crop Recommendation Model</p>
+      
+      <div class="author-info">
+        <span><strong>Yasir Hassan Ahmed</strong></span>
+      </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Architecture -->
+    <div class="slide" data-slide="2">
+      <div class="slide-header">
+        <h2>Problem Architecture</h2>
+        <p>Replacing intuition with quantifiable precision.</p>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>Current Limitation</h3>
+          <p>Traditional agricultural planning relies heavily on historical intuition and guesswork. This qualitative approach often leads to suboptimal resource allocation, poor yields, and inability to dynamically adapt to shifting climate and soil conditions.</p>
+        </div>
+        <div class="card">
+          <h3>Engineering Solution</h3>
+          <p>We developed a robust classification model that accepts continuous numerical inputs (Nitrogen, Phosphorus, Potassium, Temp, Humidity, pH, Rainfall) and outputs a precise, discrete categorical variable: the statistically optimal crop.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Dataset -->
+    <div class="slide" data-slide="3">
+      <div class="slide-header">
+        <h2>Dataset Parameters</h2>
+        <p>Kaggle Crop Recommendation Dataset details.</p>
+      </div>
+      <div class="slide-content">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="value">2,200</div>
+            <div class="label">Observations</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="value">7</div>
+            <div class="label">Numerical Features</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="value">22</div>
+            <div class="label">Target Classes</div>
+          </div>
+          <div class="stat-box">
+            <div class="value">0</div>
+            <div class="label">Null Values</div>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="card">
+            <h3>Input Vector Details</h3>
+            <ul class="ul-list">
+              <li><strong>N, P, K:</strong> Soil nutrient composition ratios.</li>
+              <li><strong>Temperature:</strong> Average °C for growth period.</li>
+              <li><strong>Humidity & Rainfall:</strong> Water availability metrics.</li>
+              <li><strong>pH:</strong> Soil acidity/alkalinity marker.</li>
+            </ul>
+          </div>
+          <div class="card" style="display: flex; align-items: center;">
+            <pre style="width: 100%;">
+{
+  <span class="code-key">"N"</span>: <span class="code-num">90</span>,
+  <span class="code-key">"P"</span>: <span class="code-num">42</span>,
+  <span class="code-key">"K"</span>: <span class="code-num">43</span>,
+  <span class="code-key">"temperature"</span>: <span class="code-num">20.87</span>,
+  <span class="code-key">"humidity"</span>: <span class="code-num">82.00</span>,
+  <span class="code-key">"ph"</span>: <span class="code-num">6.50</span>,
+  <span class="code-key">"rainfall"</span>: <span class="code-num">202.93</span>,
+  <span class="code-key">"label"</span>: <span class="code-str">"rice"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: EDA Distribution -->
+    <div class="slide" data-slide="4">
+      <div class="slide-header">
+        <h2>Exploratory Data Analysis</h2>
+        <p>Target Class Distribution</p>
+      </div>
+      <div class="slide-content">
+        <img src="../backend/eda_results/crop_distribution.png" alt="Crop Distribution" class="img-display" />
+        <p style="text-align: center; color: var(--text-muted); margin-top: 16px; font-size: 14px;">
+          The dataset is perfectly balanced with exactly 100 samples per crop, negating the need for SMOTE or class re-weighting.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: EDA Heatmap -->
+    <div class="slide" data-slide="5">
+      <div class="slide-header">
+        <h2>Exploratory Data Analysis</h2>
+        <p>Feature Correlation Matrix</p>
+      </div>
+      <div class="slide-content">
+        <img src="../backend/eda_results/correlation_heatmap.png" alt="Correlation Heatmap" class="img-display" style="max-height: 45vh;" />
+        <p style="text-align: center; color: var(--text-muted); margin-top: 16px; font-size: 14px;">
+          Heatmap reveals minimal high-correlation between features, confirming the absence of multicollinearity issues.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Pipeline -->
+    <div class="slide" data-slide="6">
+      <div class="slide-header">
+        <h2>Machine Learning Pipeline</h2>
+        <p>Methodological sequence of events.</p>
+      </div>
+      <div class="slide-content pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">01</div>
+          <div class="step-info"><h4>Data Ingestion</h4><p>Extracted raw CSV into Pandas DataFrames for matrix manipulation.</p></div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">02</div>
+          <div class="step-info"><h4>Stateful Preprocessing</h4><p>LabelEncoder maps target strings to integers. StandardScaler normalizes feature inputs.</p></div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">03</div>
+          <div class="step-info"><h4>Stratified Split</h4><p>80/20 train/test division preserving the identical class proportion in both subsets.</p></div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">04</div>
+          <div class="step-info"><h4>Model Instantiation</h4><p>Execution of Gaussian Naive Bayes and Random Forest architectures.</p></div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">05</div>
+          <div class="step-info"><h4>Hyperparameter Tuning</h4><p>GridSearchCV execution traversing parameter permutations using 5-Fold Cross Validation.</p></div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">06</div>
+          <div class="step-info"><h4>Artifact Persistence</h4><p>Exporting tuned model, Scaler, and Encoder as .joblib binaries for prod API loading.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Metrics -->
+    <div class="slide" data-slide="7">
+      <div class="slide-header">
+        <h2>Model Evaluation & Architecture Selection</h2>
+        <p>Comparing baseline vs tuned ensemble performance.</p>
+      </div>
+      <div class="slide-content">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Architecture</th>
+              <th>Methodology</th>
+              <th>Complexity Validation</th>
+              <th>Test Accuracy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Gaussian Naive Bayes</td>
+              <td>Probabilistic Baseline</td>
+              <td>Static / Fast Inference</td>
+              <td>99.55%</td>
+            </tr>
+            <tr>
+              <td style="color: var(--accent-green); font-weight: 600;">Random Forest (Deployed)</td>
+              <td>Decision Tree Ensemble</td>
+              <td>GridSearchCV (144 Params × 5 Folds)</td>
+              <td style="color: var(--text-primary); font-weight: 700; font-size: 18px;">99.55%</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <p style="color: var(--text-secondary); margin-top: 24px; font-size: 15px; line-height: 1.6;">
+          <strong>Why Random Forest?</strong> Although Naive Bayes matched the accuracy metric, Random Forest provides superior robustness to outliers and does not assume normal distribution of agricultural data. It is inherently more reliable for non-linear real-world environmental bounds.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Visual Eval -->
+    <div class="slide" data-slide="8">
+      <div class="slide-header">
+        <h2>Evaluation: Confusion Matrices</h2>
+        <p>Tracking True Positives vs False Negatives mapping.</p>
+      </div>
+      <div class="slide-content img-grid" style="align-items: center;">
+        <img src="../backend/eda_results/confusion_matrix_nb.png" alt="Naive Bayes Matrix" class="img-display" style="width: 100%; border:0; background:transparent" />
+        <img src="../backend/eda_results/confusion_matrix_rf.png" alt="Random Forest Matrix" class="img-display" style="width: 100%; border:0; background:transparent" />
+      </div>
+    </div>
+
+    <!-- SLIDE 9: High-Level Architecture -->
+    <div class="slide" data-slide="9">
+      <div class="slide-header">
+        <h2>Deployment Architecture</h2>
+        <p>A decoupled, microservice-style operational flow.</p>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>Backend Model Server (Flask)</h3>
+          <p>The trained Random Forest model acts as a standalone inference engine. It takes in soil parameters via a secure REST API, computes the probabilities, and returns a clean recommendation. Hosted completely independently of the physical UI.</p>
+        </div>
+        <div class="card">
+          <h3>Frontend UI Client (Next.js)</h3>
+          <p>A fast, accessible React interface allowing farmers or agricultural planners to input data without needing to understand the underlying Python algorithms. It communicates with the Flask server seamlessly, maintaining a strict separation of concerns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Conclusion & Impact -->
+    <div class="slide" data-slide="10">
+      <div class="slide-header">
+        <h2>Impact & Future Scope</h2>
+        <p>Beyond the bootcamp: Real-world applicability.</p>
+      </div>
+      <div class="slide-content pipeline-steps" style="display:flex; flex-direction:column; gap:16px;">
+        <div class="pipeline-step">
+          <div class="step-num">01</div>
+          <div class="step-info">
+            <h4>Data-Driven Decisions in Agriculture</h4>
+            <p>Moving away from risky intuition-based farming. This model enables precise matching of local soil samples to optimal crops, acting as an instant digital consultant for traditional farmers to maximize yield and minimize waste.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">02</div>
+          <div class="step-info">
+            <h4>Future Integration: Live Weather APIs</h4>
+            <p>Currently, temperature and rainfall are manual inputs. Version 2.0 would integrate external interfaces (like OpenWeatherMap) to fetch real-time climate data automatically based on the farm's GPS coordinates.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">03</div>
+          <div class="step-info">
+            <h4>Localizing Crop Datasets</h4>
+            <p>The Kaggle dataset acts as an excellent foundational structure. In the future, training the model explicitly on East African soil samples and native crops (Sesame, Sorghum, Bananas, etc) will truly localize its recommendation power.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="slide-counter">
+      <span class="current" id="currentSlide">1</span> / <span id="totalSlides">10</span>
+    </div>
+    
+    <div class="kbd-nav">
+      Use <span class="kbd-key">←</span> <span class="kbd-key">→</span> to navigate
+    </div>
+    
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+        Prev
+      </button>
+      <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">
+        Next
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let current = 1;
+    const total = document.querySelectorAll('.slide').length;
+    document.getElementById('totalSlides').textContent = total;
+
+    function showSlide(n) {
+      if (n < 1 || n > total) return;
+      current = n;
+      document.querySelectorAll('.slide').forEach(s => {
+        s.classList.remove('active');
+        // Reset transform to prepare for next animation
+        s.style.transform = "translateY(10px)";
+      });
+      const target = document.querySelector(`[data-slide="${n}"]`);
+      if (target) {
+        // Force reflow
+        void target.offsetWidth;
+        target.classList.add('active');
+      }
+      document.getElementById('currentSlide').textContent = n;
+      
+      // Button states
+      document.getElementById('prevBtn').disabled = n === 1;
+      const nextBtn = document.getElementById('nextBtn');
+      if (n === total) {
+        nextBtn.innerHTML = 'Finish';
+        nextBtn.onclick = () => alert('End of Presentation.');
+      } else {
+        nextBtn.innerHTML = 'Next <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>';
+        nextBtn.onclick = () => nextSlide();
+      }
+      
+      // Progress Bar
+      const pct = ((n - 1) / (total - 1)) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+    }
+
+    function nextSlide() { showSlide(current + 1); }
+    function prevSlide() { showSlide(current - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    });
+
+    showSlide(1);
+  </script>
+</body>
+</html>
