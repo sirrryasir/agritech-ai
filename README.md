@@ -1,180 +1,121 @@
-# 🌾 AgriTech AI - Smart Agriculture Intelligence Platform
+# AgriTech AI - Crop Recommendation Model
 
-<div align="center">
-  <p>
-    <a href="https://github.com/sirrryasir/agritech-ai"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python" alt="Python" /></a>
-    <a href="https://pytorch.org"><img src="https://img.shields.io/badge/PyTorch-ML-EE4C2C?style=flat-square&logo=pytorch" alt="PyTorch" /></a>
-    <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" alt="React" /></a>
-    <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=nodedotjs" alt="Node.js" /></a>
-  </p>
-</div>
+Machine learning model that recommends crops based on soil composition and environmental conditions.
 
----
+## What It Does
 
-## 📌 Overview
+Analyzes soil nutrients (Nitrogen, Phosphorus, Potassium), temperature, humidity, pH, and rainfall to predict the best crop to cultivate. Uses scikit-learn RandomForest and GaussianNB classifiers trained on agricultural datasets.
 
-**AgriTech AI** is an intelligent agricultural platform powered by machine learning. It helps farmers make data-driven decisions by analyzing crop health, predicting yields, optimizing irrigation, and providing disease detection. Combining computer vision, time-series forecasting, and real-time sensor data to revolutionize modern farming.
+## How It Works
 
----
+1. User enters soil/weather parameters in web form
+2. Frontend sends data to Flask backend
+3. Backend runs data through trained ML model
+4. Returns recommended crop
 
-## ✨ Key Features
+## Tech Stack
 
-- **🌱 Crop Health Monitoring**: Real-time analysis using satellite/drone imagery
-- **🤖 Disease Detection**: ML-powered identification of crop diseases
-- **📊 Yield Prediction**: Forecast crop yields based on environmental factors
-- **💧 Smart Irrigation**: Optimize water usage with ML predictions
-- **🌤️ Weather Integration**: Incorporate weather patterns for better decisions
-- **📈 Analytics Dashboard**: Visual insights and historical trends
-- **🚜 Field Management**: Zone-based monitoring and recommendations
+Backend:
+- Flask with CORS
+- scikit-learn (RandomForest, GaussianNB classifiers)
+- Pandas, NumPy for data processing
+- joblib for model serialization
+- Runs on port 5000
 
----
+Frontend:
+- Next.js 16
+- React 19
+- TypeScript
+- TailwindCSS
 
-## 🛠️ Tech Stack
+ML:
+- Model training with train.py
+- Data preprocessing and scaling
+- Uses GridSearchCV for hyperparameter tuning
 
-| Component | Technology |
-|-----------|------------|
-| **ML/AI** | Python 3.10, PyTorch, TensorFlow |
-| **Frontend** | React 19, TypeScript, TailwindCSS |
-| **Backend** | Node.js, Express.js, FastAPI |
-| **Database** | MongoDB, PostgreSQL |
-| **Data** | Pandas, NumPy, Scikit-learn |
-| **Notebooks** | Jupyter for analysis |
+## Input Parameters
 
----
+Soil Composition:
+- N: Nitrogen content (ppm)
+- P: Phosphorus content (ppm)
+- K: Potassium content (ppm)
 
-## 🚀 Quick Start
+Environmental:
+- Temperature (Celsius)
+- Humidity (%)
+- pH level
+- Rainfall (mm)
 
-### Prerequisites
-- Python 3.10+
-- Node.js 20.x
-- pip and npm
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/sirrryasir/agritech-ai.git
-cd agritech-ai
-```
-
-### 2. Python Environment Setup
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-### 3. Backend Server
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### 4. Frontend Setup
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
-
-### 5. ML Notebooks
-```bash
-cd ../notebooks
-jupyter notebook
-```
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 agritech-ai/
-├── frontend/        # React web application
-│   ├── src/
-│   ├── public/
-│   └── package.json
-├── backend/         # Node.js/FastAPI server
-│   ├── src/
-│   ├── api/
-│   └── models/
-├── notebooks/       # Jupyter notebooks for ML development
-│   ├── crop_disease_detection.ipynb
-│   ├── yield_prediction.ipynb
-│   └── data_analysis.ipynb
-├── dataset/         # Training and test datasets
-├── docs/            # Technical documentation
-└── requirements.txt # Python dependencies
+├── backend/
+│   ├── app.py           Flask API server
+│   ├── train.py         Model training script
+│   ├── utils.py         Prediction utilities
+│   └── models/          Trained model files
+├── frontend/
+│   ├── app/
+│   │   ├── page.tsx     Main prediction interface
+│   │   └── layout.tsx
+├── notebooks/           Jupyter notebooks
+├── dataset/             Training data
+└── requirements.txt
 ```
 
----
+## Installation
 
-## 🤝 Contributing
+### Backend
 
-We welcome contributions! Follow these steps:
+```bash
+cd backend
+pip install -r ../requirements.txt
+python app.py
+```
 
-1. **Fork and clone**
-   ```bash
-   git clone https://github.com/sirrryasir/agritech-ai.git
-   cd agritech-ai
-   ```
+Backend runs on http://localhost:5000
 
-2. **Set up environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
+### Frontend
 
-3. **Create feature branch**
-   ```bash
-   git checkout -b feature/your-feature
-   ```
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-4. **Make changes and test**
-   ```bash
-   # Run tests
-   pytest
-   # Or work with notebooks
-   jupyter notebook
-   ```
+Frontend runs on http://localhost:3000
 
-5. **Submit PR**
-   ```bash
-   git commit -m "feat: add your feature"
-   git push origin feature/your-feature
-   ```
+## API Endpoint
 
-### Development Guidelines
-- Use Python best practices and type hints
-- Document ML models thoroughly
-- Include unit tests for backend
-- Update Jupyter notebooks for reproducibility
-- Follow existing code style
+POST /predict
+```json
+{
+  "N": 90,
+  "P": 42,
+  "K": 43,
+  "temperature": 20.87,
+  "humidity": 82.0,
+  "ph": 6.5,
+  "rainfall": 202.9
+}
+```
 
----
+Returns:
+```json
+{
+  "status": "success",
+  "prediction": "rice",
+  "input_data": {...}
+}
+```
 
-## 📊 Model Information
+## Models
 
-Our ML models include:
-- **Crop Disease Classification**: ResNet50 trained on agricultural imaging datasets
-- **Yield Prediction**: LSTM-based time-series forecasting
-- **Irrigation Optimization**: Gradient Boosting models (XGBoost)
-- **Soil Quality Analysis**: Multi-class classification
+- RandomForestClassifier: Primary model
+- GaussianNB: Comparison model
+- Trained on agricultural crop-soil-weather dataset
 
-See `notebooks/` for training details and `docs/` for model specifications.
+## License
 
----
-
-## 📄 License
-
-MIT License. See `LICENSE` for details.
-
----
-
-## 👨‍💻 Author
-
-Built by **Yasir Hassan** ([@sirrryasir](https://github.com/sirrryasir))  
-Portfolio: [yaasir.dev](https://www.yaasir.dev)
-
----
-
-**Support sustainable agriculture!** 🌾 ⭐
+MIT
